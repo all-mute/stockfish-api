@@ -4,6 +4,52 @@
         "contact": {}
     },
     "paths": {
+        "/evaluate_win_probability": {
+            "post": {
+                "description": "Evaluate win probability",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "Evaluate win probability",
+                "parameters": [
+                    {
+                        "description": "Win Probability Request Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.WinProbabilityRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WinProbabilityResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/move": {
             "post": {
                 "description": "Ask for a move",
@@ -80,6 +126,25 @@
                     "type": "string"
                 },
                 "move": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.WinProbabilityRequest": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "integer"
+                },
+                "table": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.WinProbabilityResponse": {
+            "type": "object",
+            "properties": {
+                "probability": {
                     "type": "string"
                 }
             }

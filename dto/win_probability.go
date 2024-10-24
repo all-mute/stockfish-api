@@ -8,3 +8,4 @@ type WinProbabilityRequest struct {
 type WinProbabilityResponse struct {
 	Probability string `json:"probability"`
 }
+
