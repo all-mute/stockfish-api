@@ -70,6 +70,41 @@ func HandleWebSocket(c *gin.Context) {
 	handler.ServeHTTP(c.Writer, c.Request)
 }
 
+// EvaluateWinProbabilityHandler godoc
+// @Summary Evaluate win probability
+// @Schemes
+// @Description Evaluate win probability
+// @Tags example
+// @Accept json
+// @Produce json
+// @Param body body dto.WinProbabilityRequest true "Win Probability Request Body"
+// @Example {"table": "2k5/8/3b4/8/8/8/4R3/K1R5 b - - 0 1", "level": 20}
+// @Success 200 {object} dto.WinProbabilityResponse
+// @Failure 400 {object} dto.ErrorResponse
+// @Failure 500 {object} dto.ErrorResponse
+// @Router /evaluate_win_probability [post]
+func EvaluateWinProbabilityHandler(c *gin.Context) {
+	var req dto.WinProbabilityRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	table := req.Table
+	if !table.IsValid() {
+		c.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	probability, err := chessDriver.EvaluateWinProbability(req.Level, table)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.WinProbabilityResponse{Probability: probability})
+}
+
 // Creates a new gintonic rote
 func New() *gin.Engine {
 	chessDriver = chess.New()
@@ -78,6 +113,7 @@ func New() *gin.Engine {
 
 	r := gin.Default()
 	r.POST("/move", MoveHandler)
+	r.POST("/evaluate_win_probability", EvaluateWinProbabilityHandler)
 	r.GET("/ws", HandleWebSocket)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

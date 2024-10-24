@@ -108,3 +108,23 @@ func TestPlayGameWs(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestEvaluateWinProbabilityHandler(t *testing.T) {
+	winProbRequest := dto.WinProbabilityRequest{Table: chess.BASE_FEN, Level: 20}
+	b, err := json.Marshal(winProbRequest)
+	require.NoError(t, err)
+
+	bytesBody := bytes.NewReader(b)
+	response, err := http.Post(URL+"/evaluate_win_probability", "application/json", bytesBody)
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, response.StatusCode)
+
+	var winProbResponse dto.WinProbabilityResponse
+	responseBytes, err := io.ReadAll(response.Body)
+	require.NoError(t, err)
+
+	err = json.Unmarshal(responseBytes, &winProbResponse)
+	require.NoError(t, err)
+
+	require.NotEmpty(t, winProbResponse.Probability)
+}

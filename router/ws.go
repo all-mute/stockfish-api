@@ -38,3 +38,20 @@ func PlayGameWs(ws *websocket.Conn, request dto.MoveWsRequest) {
 		moves++
 	}
 }
+
+func EvaluateWinProbabilityWs(ws *websocket.Conn, request dto.WinProbabilityRequest) {
+	table := request.Table
+	if !table.IsValid() {
+		websocket.JSON.Send(ws, dto.ErrorResponse{Error: "Invalid table"})
+		return
+	}
+
+	probability, err := chessDriver.EvaluateWinProbability(request.Level, table)
+	if err != nil {
+		websocket.JSON.Send(ws, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	response := dto.WinProbabilityResponse{Probability: probability}
+	websocket.JSON.Send(ws, response)
+}

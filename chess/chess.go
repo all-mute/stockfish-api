@@ -122,3 +122,22 @@ func (s TableState) IsValid() bool {
 	// Check if the fen matches the pattern
 	return re.MatchString(string(s))
 }
+
+func (d *Driver) EvaluateWinProbability(skillLevel uint16, state TableState) (string, error) {
+	if !state.IsValid() {
+		return "", errors.New("stockfish: invalid fen state")
+	}
+
+	buf := bytes.NewBuffer([]byte{})
+
+	cmd := exec.Command(getScriptFile(d.scriptsPath, "evaluate_win_probability.sh"), d.exePath, fmt.Sprint(skillLevel), string(state))
+	cmd.Stdout = buf
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return "", errors.New("stockfish: error occurred when running stockfish command " + err.Error())
+	}
+
+	output := buf.String()
+	// Предполагаем, что скрипт возвращает вероятность в виде строки
+	return output, nil
+}

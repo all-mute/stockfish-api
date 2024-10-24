@@ -8,6 +8,7 @@ import (
 
 	"github.com/EdsonHTJ/stockfish-api/chess"
 	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -78,4 +79,13 @@ func TestParalelGames(t *testing.T) {
 	}
 
 	wg.Wait()
+}
+
+func TestEvaluateWinProbability(t *testing.T) {
+	stockFish := chess.New()
+	probability, err := stockFish.EvaluateWinProbability(20, chess.BASE_FEN)
+	require.NoError(t, err)
+
+	t.Log("Вероятность победы:", probability)
+	assert.NotEmpty(t, probability, "Вероятность победы не должна быть пустой")
 }
