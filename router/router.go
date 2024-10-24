@@ -105,7 +105,7 @@ func EvaluateWinProbabilityHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, dto.WinProbabilityResponse{Probability: probability})
 }
 
-// Creates a new gintonic rote
+// Creates a new gintonic route
 func New() *gin.Engine {
 	chessDriver = chess.New()
 
@@ -118,4 +118,39 @@ func New() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	return r
+}
+
+func PlayMoveWs(ws *websocket.Conn, request dto.MoveWsRequest) dto.MoveResponse {
+	table := request.Table
+	if !table.IsValid() {
+		websocket.JSON.Send(ws, dto.ErrorResponse{Error: "Invalid table"})
+		return dto.MoveResponse{}
+	}
+
+	move, err := chessDriver.Move(request.Level, table)
+	if err != nil {
+		websocket.JSON.Send(ws, dto.ErrorResponse{Error: err.Error()})
+		return dto.MoveResponse{}
+	}
+
+	response := dto.MoveResponse{Move: move.Move, FenTable: string(move.Table)}
+	websocket.JSON.Send(ws, response)
+	return response
+}
+
+func EvaluateWinProbabilityWs(ws *websocket.Conn, request dto.WinProbabilityRequest) {
+	table := request.Table
+	if !table.IsValid() {
+		websocket.JSON.Send(ws, dto.ErrorResponse{Error: "Invalid table"})
+		return
+	}
+
+	probability, err := chessDriver.EvaluateWinProbability(request.Level, table)
+	if err != nil {
+		websocket.JSON.Send(ws, dto.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	response := dto.WinProbabilityResponse{Probability: probability}
+	websocket.JSON.Send(ws, response)
 }

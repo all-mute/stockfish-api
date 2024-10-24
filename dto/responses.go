@@ -8,3 +8,7 @@ type MoveResponse struct {
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
+
+type WinProbabilityResponse struct {
+	Probability string `json:"probability"`
+}
