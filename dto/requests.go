@@ -19,19 +19,6 @@ type MoveWsRequest struct {
 }
 
 type WinProbabilityRequest struct {
-	Table string `json:"table"`
-	Level uint16 `json:"level"`
-}
-
-type MoveResponse struct {
-	FenTable string `json:"fenTable"`
-	Move     string `json:"move"`
-}
-
-type ErrorResponse struct {
-	Error string `json:"error"`
-}
-
-type WinProbabilityResponse struct {
-	Probability string `json:"probability"`
+	Table string `json:"table" example:"2k5/8/3b4/8/8/8/4R3/K1R5 b - - 0 1"`
+	Level uint16 `json:"level" example:"20"`
 }
